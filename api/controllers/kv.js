@@ -3,7 +3,6 @@ const URLSafeBase64 = require("urlsafe-base64")
 const bodyParser = require('body-parser')
 const C = require("./collection.js")
 var DB = C.Collection;
-console.log(DB.findOne);
 
 //let now = '2017-06-29T07:36:17.653Z'
 let now = new Date();
@@ -19,7 +18,7 @@ function getKEY(req, res) {
   }
 
   // process
-  let key = url.substr(1),
+  let key = url.substr(4),
       doc = DB.findOne(key);
 
   if(!doc){
@@ -29,7 +28,7 @@ function getKEY(req, res) {
   }else{
     res.json(400, { 
       "VALUE": Base64.encode(doc.value),
-      "TS": now.toUTCString()
+      "TS": now
     })
   }
 }
@@ -45,22 +44,22 @@ function deleteKEY(req, res) {
   }
 
   // findOneAndDelete
-  let key = url.substr(1),
+  let key = url.substr(4),
       oldValue = DB.findOneAndDelete(key);
 
-  if(oldValue !== false){
+  if(oldValue === false){
     res.json(400, { 
       message: `Document with key ${key} cannot found.`
     })
   }else{
     if(oldValue === null){
       res.json(200, {
-        TS: now.toUTCString()
+        TS: now
       })
     }else{
       res.json(200, { 
         OLD_VALUE: Base64.encode(oldValue),
-        TS: now.toUTCString()
+        TS: now
       })
     }
   }
@@ -82,16 +81,14 @@ function postKEY(req, res) {
       message: "request for update must have content-type with application/json"
     })
   }
-
       
   // findOneAndDelete
-  let key = url.substr(1),
-      value = bodyParser.json(req.body).value;
+  let key = url.substr(4),
+      value = req.body.VALUE;
   if(DB.findOneAndUpdate(key, value)){
     res.json(200, {
-      TS: now.toUTCString(),
-    })
-    
+      TS: now,
+    }) 
   }else{
     res.json(400, { 
       message: `Post data error`
