@@ -12,6 +12,7 @@ function getKEY(req, res) {
   // check url
   if(result.message !== undefined){
     res.json(400, { message: result.message })
+    return;
   }
 
   // process
@@ -34,11 +35,13 @@ function postKEY(req, res) {
   // check url
   if(result.message !== undefined){
     res.json(400, { message: result.message })
+    return;
   }
 
   // check request header content-type is application/json
   if(!req.is("application/json")){
     res.json(400, { message: "request for update must have content-type with application/json" })
+    return;
   }
       
   // findOneAndDelete
@@ -57,6 +60,7 @@ function deleteKEY(req, res) {
   // check url
   if(result.message !== undefined){
     res.json(400, { message: result.message })
+    return
   }
 
   // findOneAndDelete
@@ -65,6 +69,7 @@ function deleteKEY(req, res) {
 
   if(oldValue === false){
     res.json(404, { message: `Document with key ${key} cannot found.` })
+    return
   }else{
     if(oldValue === ''){
       res.json(200, { TS: now })
