@@ -53,7 +53,7 @@ function deleteKEY(req, res) {
       message: `Document with key ${key} cannot found.`
     })
   }else{
-    if(oldValue === null){
+    if(oldValue === ''){
       res.json(200, {
         TS: now
       })

@@ -79,7 +79,7 @@ Collection.prototype.findOneAndDelete = function(key){
 		list.some((item) => {
 			if(item.key === key){
 				oldValue = item.value;
-				item.value = null;
+				list.delete(item);  // null will be encode as bnVsbA==
 				return true;
 			}
 			return false;
