@@ -77,11 +77,17 @@ paths:
     post:
       description: check input and resend to remote API server
       operationId: encrypt
+      parameters:
+        - name: plaintext
+          in: body
+          required: true
+          schema: 
+            $ref: "#/definitions/EncryptPostRequest"
       responses:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/KvPostResponse"
+            $ref: "#/definitions/EncryptPostResponse"
         "400":
           description: Bad Request, usually malformed parameters
           schema:
@@ -122,6 +128,18 @@ definitions:
       - TS
     properties:
       TS:
+        type: string
+  EncryptPostRequest:
+    required: 
+      - plaintext
+    properties:
+      plaintext:
+        type: string
+  EncryptPostResponse:
+    required:
+      - ciphertext
+    properties:
+      ciphertext:
         type: string
   ErrorResponse:
     required:

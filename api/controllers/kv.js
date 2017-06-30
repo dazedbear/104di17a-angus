@@ -2,9 +2,8 @@ const Base64 = require("js-base64").Base64
 const URLSafeBase64 = require("urlsafe-base64")
 const bodyParser = require('body-parser')
 const C = require("./collection.js")
-var DB = C.Collection;
 
-//let now = '2017-06-29T07:36:17.653Z'
+var DB = C.Collection;
 let now = new Date();
 
 function getKEY(req, res) {
@@ -12,20 +11,15 @@ function getKEY(req, res) {
       result = checkUrl(url);
   // check url
   if(result.message !== undefined){
-    res.json(400, { 
-      message: result.message
-    })
+    res.json(400, { message: result.message })
   }
 
   // process
   let key = url.substr(4),
       doc = DB.findOne(key);
-  console.log(doc)
 
   if(!doc){
-    res.json(404, { 
-      message: `Document with key ${key} cannot found.`
-    })
+    res.json(404, { message: `Document with key ${key} cannot found.` })
   }else{
     res.json(200, { 
       "VALUE": Base64.encode(doc.value),
@@ -34,14 +28,35 @@ function getKEY(req, res) {
   }
 }
 
+function postKEY(req, res) {
+  let url = req.url,
+      result = checkUrl(url);
+  // check url
+  if(result.message !== undefined){
+    res.json(400, { message: result.message })
+  }
+
+  // check request header content-type is application/json
+  if(!req.is("application/json")){
+    res.json(400, { message: "request for update must have content-type with application/json" })
+  }
+      
+  // findOneAndDelete
+  let key = url.substr(4),
+      value = req.body.VALUE;
+  if(DB.findOneAndUpdate(key, value)){
+    res.json(200, { TS: now }) 
+  }else{
+    res.json(400, { message: `Post data error` })
+  }
+}
+
 function deleteKEY(req, res) {
   let url = req.url,
       result = checkUrl(url);
   // check url
   if(result.message !== undefined){
-    res.json(400, { 
-      message: result.message
-    })
+    res.json(400, { message: result.message })
   }
 
   // findOneAndDelete
@@ -49,51 +64,16 @@ function deleteKEY(req, res) {
       oldValue = DB.findOneAndDelete(key);
 
   if(oldValue === false){
-    res.json(404, { 
-      message: `Document with key ${key} cannot found.`
-    })
+    res.json(404, { message: `Document with key ${key} cannot found.` })
   }else{
     if(oldValue === ''){
-      res.json(200, {
-        TS: now
-      })
+      res.json(200, { TS: now })
     }else{
       res.json(200, { 
         OLD_VALUE: Base64.encode(oldValue),
         TS: now
       })
     }
-  }
-}
-
-function postKEY(req, res) {
-  let url = req.url,
-      result = checkUrl(url);
-  // check url
-  if(result.message !== undefined){
-    res.json(400, { 
-      message: result.message
-    })
-  }
-
-  // check request header content-type is application/json
-  if(!req.is("application/json")){
-    res.json(400, { 
-      message: "request for update must have content-type with application/json"
-    })
-  }
-      
-  // findOneAndDelete
-  let key = url.substr(4),
-      value = req.body.VALUE;
-  if(DB.findOneAndUpdate(key, value)){
-    res.json(200, {
-      TS: now,
-    }) 
-  }else{
-    res.json(400, { 
-      message: `Post data error`
-    })
   }
 }
 

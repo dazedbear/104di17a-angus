@@ -9,8 +9,14 @@ module.exports = {
 
 // collection to save K-V
 function Collection(){
-  // hashIdx: hash value, value: LinkedList with DataItem
+  // hashIdx: hash value from key, value: LinkedList with Document
   this.hashIdx = {};
+}
+
+// 相同雜湊值時要怎麼判別需求哪個？ =>  key相同
+function Document(key, value){
+	this.key = key;      // url-safe base64
+	this.value = value;  // origin, no base64
 }
 
 // open a local file to read data
@@ -18,26 +24,35 @@ Collection.prototype.connect = function(){
 	// 暫時先不寫，最後再補
 }
 
+/* 
+	[Return]
+		<obj> Document  for find success
+		<bool> false    for others 
+*/
 Collection.prototype.findOne = function(key){
 	let idx = Hash(key),
-			list = this.hashIdx[idx];
+		list = this.hashIdx[idx];
 
 	if(!list || list.length === 0){
 		// not found
 		return false;
 	}else{
 		// include same hash idx, one hash idx
-		// same hash index, compare origin key, return first match same keys
+		// same hash index, compare origin key, return first match same key
 		let target = list.filter((doc) => doc.key === key).toArray();
 		if(target.length > 1) console.log(`find result has multi same keys with docs: ${target}`);
 		return (target.length === 0) ? false : target.shift();
 	}
 }
 
+/* 
+	[Return]
+		<str> hashIndex
+*/
 Collection.prototype.insertOne = function(key, value){
 	let idx = Hash(key),
-			list = this.hashIdx[idx],
-			doc = new Document(key, value);
+		list = this.hashIdx[idx],
+		doc = new Document(key, value);
 
 	if(!list){  
 		this.hashIdx[idx] = new List();
@@ -48,11 +63,16 @@ Collection.prototype.insertOne = function(key, value){
 	return idx;  // return hash index
 }
 
+/* 
+	[Return]
+		<bool> true / false
+*/
 Collection.prototype.findOneAndUpdate = function(key, value){
 	let idx = Hash(key),
-			doc = new Document(key, value);
+		doc = new Document(key, value);
 
 	if(!this.findOne(key)){
+		// not found, then insert one
 		return this.insertOne(key, value);
 	}else{
 		let list = this.hashIdx[idx];
@@ -66,6 +86,11 @@ Collection.prototype.findOneAndUpdate = function(key, value){
 	}
 }
 
+/* 
+	[Return]
+		<str>  oldValue  for delete success (may be '')
+		<bool> false
+*/
 Collection.prototype.findOneAndDelete = function(key){
 	let idx = Hash(key);
 
@@ -73,7 +98,7 @@ Collection.prototype.findOneAndDelete = function(key){
 		return new Error(`no document found with key: ${key}`);
 	}else{
 		let list = this.hashIdx[idx],
-				target = list.filter((doc) => doc.key === key).toArray();
+			target = list.filter((doc) => doc.key === key).toArray();
 		
 		let oldValue;
 		list.some((item) => {
@@ -86,11 +111,4 @@ Collection.prototype.findOneAndDelete = function(key){
 		})
 		return (!oldValue) ? false : oldValue;
 	}
-}
-
-// for every k-v store
-// 相同雜湊值時要怎麼判別需求哪個？ =>  origin base64 相同
-function Document(key, value){
-	this.key = key;      // url-safe base64
-	this.value = value;  // base64
 }

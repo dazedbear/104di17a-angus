@@ -16,14 +16,14 @@ function encrypt(req, res) {
     let input = req.body.plaintext,
         regHex = /[a-fA-F\d]+\b/g;
 
-    if(input.length > 32){
-        res.json(413, { message: "Entity Too Large" })
+    if(!regHex.test(input)){
+        res.json(400, { message: "contain illegal character in hex string" })
         return;
     }else if((input.length % 2) !== 0){
         res.json(400, { message: "illegal hex string with odd length" })
         return;
-    }else if(!regHex.test(input)){
-        res.json(400, { message: "contain illegal character in hex string" })
+    }else if(input.length > 32){
+        res.json(413, { message: "Entity Too Large" })
         return;
     }
 
