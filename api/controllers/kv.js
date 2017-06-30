@@ -20,13 +20,14 @@ function getKEY(req, res) {
   // process
   let key = url.substr(4),
       doc = DB.findOne(key);
+  console.log(doc)
 
   if(!doc){
-    res.json(400, { 
+    res.json(404, { 
       message: `Document with key ${key} cannot found.`
     })
   }else{
-    res.json(400, { 
+    res.json(200, { 
       "VALUE": Base64.encode(doc.value),
       "TS": now
     })
@@ -48,7 +49,7 @@ function deleteKEY(req, res) {
       oldValue = DB.findOneAndDelete(key);
 
   if(oldValue === false){
-    res.json(400, { 
+    res.json(404, { 
       message: `Document with key ${key} cannot found.`
     })
   }else{

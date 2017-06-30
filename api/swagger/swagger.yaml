@@ -72,6 +72,24 @@ paths:
           description: Bad Request, usually malformed parameters
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /encrypt:
+    x-swagger-router-controller: encrypt
+    post:
+      description: check input and resend to remote API server
+      operationId: encrypt
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/KvPostResponse"
+        "400":
+          description: Bad Request, usually malformed parameters
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "413":
+          description: Entity Too Large
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
