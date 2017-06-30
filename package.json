@@ -1,0 +1,29 @@
+{
+  "name": "di-eval-bp",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Boilerplate for 104 Dev Incubator evaluations",
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "main": "app.js",
+  "scripts": {
+    "build": "docker build -t di-eval-bp .",
+    "build-dev": "docker build -t di-eval-dev -f dockerfiles/dev .",
+    "build-staging": "docker build -t di-eval-staging -f dockerfiles/staging .",
+    "start": "swagger project start",
+    "start-dev-docker": "docker run -it --rm -v $(pwd):/opt/app -p 10010:10010 di-eval-dev",
+    "start-docker": "docker run -it --rm -p 10010:10010 di-eval-bp",
+    "test": "swagger project test"
+  },
+  "dependencies": {
+    "restify": "^4.0.2",
+    "swagger-restify-mw": "^0.1.0"
+  },
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "request": "^2.81.0",
+    "should": "^7.1.0",
+    "supertest": "^3.0.0"
+  }
+}

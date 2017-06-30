@@ -1,0 +1,113 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: di-eval-bp
+host: localhost:10010
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  KvKey:
+    name: KvKey
+    in: path
+    description: >
+      KEY to manipulate with
+    required: true
+    type: string
+paths:
+  /kv/{KvKey}:
+    x-swagger-router-controller: kv
+    get:
+      description: Retrieve VALUE to given KEY
+      operationId: getKEY
+      parameters:
+        - $ref: "#/parameters/KvKey"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/KvGetResponse"
+        "400":
+          description: Bad Request, usually malformed parameters
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        "404":
+          description: Not found
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Delete VALUE to given KEY
+      operationId: deleteKEY
+      parameters:
+        - $ref: "#/parameters/KvKey"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/KvDeleteResponse"
+        "400":
+          description: Bad Request, usually malformed parameters
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Update VALUE to given KEY
+      operationId: postKEY
+      parameters:
+        - $ref: "#/parameters/KvKey"
+        - name: body
+          in: body
+          required: true
+          schema: 
+            $ref: "#/definitions/KvPostRequest"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/KvPostResponse"
+        "400":
+          description: Bad Request, usually malformed parameters
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  KvDeleteResponse:
+    required:
+      - TS
+    properties:
+      OLD_VALUE:
+        type: string
+      TS:
+        type: string
+  KvGetResponse:
+    required:
+      - TS
+      - VALUE
+    properties:
+      VALUE:
+        type: string
+      TS:
+        type: string
+  KvPostRequest:
+    required: 
+      - VALUE
+    properties:
+      VALUE:
+        type: string
+  KvPostResponse:
+    required:
+      - TS
+    properties:
+      TS:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string

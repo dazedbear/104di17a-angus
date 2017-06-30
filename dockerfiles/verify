@@ -1,0 +1,15 @@
+FROM di-eval-staging
+
+ARG repo=https://github.com/104corp/di-eval-bp
+ARG branch=17a-soln
+
+RUN git clone $repo /opt/app
+WORKDIR /opt/app
+RUN git checkout $branch
+RUN yarn
+RUN rm -fr /opt/app/test
+COPY ./test /opt/app/test
+
+EXPOSE 10010
+
+CMD ["npm", "run", "test"]
