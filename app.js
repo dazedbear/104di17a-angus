@@ -3,6 +3,7 @@
 var SwaggerRestify = require('swagger-restify-mw');
 var restify = require('restify');
 var app = restify.createServer();
+app.use(restify.bodyParser());
 
 module.exports = app; // for testing
 

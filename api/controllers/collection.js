@@ -1,6 +1,6 @@
 const Hash = require("string-hash")
 const List = require("collections/list")
-const Base64 = require("js-base64")
+const Base64 = require("js-base64").Base64
 const fs = require("fs")
 
 module.exports = {
